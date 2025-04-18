@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 function Login({ onLogin }) {
     const [email, setEmail] = useState('admin@democrm.com');
@@ -74,12 +75,21 @@ function Login({ onLogin }) {
                     
                     <button
                         type="submit"
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 mb-4"
                         disabled={loading}
                     >
                         {loading ? 'Выполняется вход...' : 'Войти'}
                     </button>
                 </form>
+                
+                <div className="text-center mt-2">
+                    <p className="text-gray-600">
+                        Нет аккаунта?{' '}
+                        <Link to="/register" className="text-blue-600 hover:underline">
+                            Зарегистрироваться
+                        </Link>
+                    </p>
+                </div>
             </div>
         </div>
     );

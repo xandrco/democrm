@@ -31,6 +31,10 @@ export function AuthProvider({ children }) {
         setUser(userData);
     };
 
+    const register = (userData) => {
+        setUser(userData);
+    };
+
     const logout = async () => {
         try {
             await axios.post('/api/logout');
@@ -48,6 +52,7 @@ export function AuthProvider({ children }) {
         loading,
         isAuthenticated: !!user,
         login,
+        register,
         logout
     };
 
