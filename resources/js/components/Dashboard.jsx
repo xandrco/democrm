@@ -27,7 +27,9 @@ function Dashboard() {
     }, [currentPage, sortField, sortDirection, statusFilter, searchTerm]);
 
     const handleSearchSubmit = (e) => {
-        e.preventDefault();
+        if (e) {
+            e.preventDefault();
+        }
         setCurrentPage(1);
         fetchApplications();
     };
@@ -53,13 +55,19 @@ function Dashboard() {
                 per_page: perPage,
                 sort_by: sortField,
                 sort_direction: sortDirection,
-                status: statusFilter || undefined,
-                search: searchTerm || undefined
             };
             
-            Object.keys(params).forEach(key => 
-                params[key] === undefined && delete params[key]
-            );
+            if (statusFilter) {
+                params.status = statusFilter;
+            }
+            
+            params.search = searchTerm;
+            
+            Object.keys(params).forEach(key => {
+                if (params[key] === undefined || params[key] === null) {
+                    delete params[key];
+                }
+            });
             
             const response = await axios.get('/api/applications', { params });
             

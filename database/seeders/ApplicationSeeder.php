@@ -612,7 +612,7 @@ class ApplicationSeeder extends Seeder
     {
         $users = User::all();
         
-        $statuses = ['pending', 'approved', 'rejected'];
+        $statuses = ['pending', 'in_progress', 'approved', 'rejected'];
         
         for ($i = 0; $i < count($this->applications); $i++) {
             $appData = $this->applications[$i];

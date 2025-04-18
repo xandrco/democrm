@@ -38,12 +38,15 @@ class ApplicationController extends Controller
             $query->where('status', $status);
         }
         
-        if ($search) {
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('message', 'like', "%{$search}%");
-            });
+        if ($request->has('search')) {
+            $search = $request->query('search');
+            
+            if (!empty($search)) {
+                $query->where(function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                });
+            }
         }
         
         if ($sortField === 'reviewed_at') {
@@ -86,7 +89,7 @@ class ApplicationController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'message' => $request->message,
-            'status' => 'pending',
+            'status' => $request->status ?? 'pending',
             'metadata' => $metadata,
         ]);
         
@@ -116,7 +119,7 @@ class ApplicationController extends Controller
             'name' => 'sometimes|required|string|max:255',
             'email' => 'sometimes|required|email|max:255',
             'message' => 'sometimes|required|string',
-            'status' => 'sometimes|required|in:pending,approved,rejected',
+            'status' => 'sometimes|required|in:pending,in_progress,approved,rejected',
         ]);
         
         if ($validator->fails()) {

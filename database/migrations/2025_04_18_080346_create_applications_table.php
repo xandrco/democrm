@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('email');
             $table->text('message');
-            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->enum('status', ['pending', 'in_progress', 'approved', 'rejected'])->default('pending');
             $table->unsignedBigInteger('reviewed_by')->nullable();
             $table->datetime('reviewed_at')->nullable();
             $table->json('metadata')->nullable();
