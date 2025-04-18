@@ -1,7 +1,8 @@
 import React from 'react';
 import { formatDate } from '../../utils/helpers';
+import StatusDropdown from './StatusDropdown';
 
-function ApplicationsTable({ applications, sortField, sortDirection, handleSort }) {
+function ApplicationsTable({ applications, sortField, sortDirection, handleSort, onStatusChange }) {
     const renderSortIndicator = (field) => {
         if (sortField === field) {
             return (
@@ -40,6 +41,12 @@ function ApplicationsTable({ applications, sortField, sortDirection, handleSort 
                 return 'Отклонена';
             default:
                 return status;
+        }
+    };
+    
+    const handleApplicationStatusChange = (applicationId, newStatus) => {
+        if (onStatusChange) {
+            onStatusChange(applicationId, newStatus);
         }
     };
     
@@ -98,9 +105,13 @@ function ApplicationsTable({ applications, sortField, sortDirection, handleSort 
                                 {application.email}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeColor(application.status)}`}>
-                                    {getStatusLabel(application.status)}
-                                </span>
+                                <div className="w-40">
+                                    <StatusDropdown
+                                        applicationId={application.id}
+                                        currentStatus={application.status}
+                                        onStatusChange={(newStatus) => handleApplicationStatusChange(application.id, newStatus)}
+                                    />
+                                </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 {formatDate(application.created_at)}

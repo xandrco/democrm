@@ -109,6 +109,23 @@ function Dashboard() {
         logout();
     };
 
+    const handleApplicationStatusChange = (applicationId, newStatus) => {
+        setApplications(prev => 
+            prev.map(app => {
+                if (app.id === applicationId) {
+                    return {
+                        ...app,
+                        status: newStatus,
+                        reviewed_at: app.status === 'pending' && newStatus !== 'pending' 
+                            ? new Date().toISOString() 
+                            : app.reviewed_at
+                    };
+                }
+                return app;
+            })
+        );
+    };
+
     return (
         <div className="min-h-screen bg-gray-100">
             <nav className="bg-white shadow-sm">
@@ -163,6 +180,7 @@ function Dashboard() {
                                     sortField={sortField}
                                     sortDirection={sortDirection}
                                     handleSort={handleSort}
+                                    onStatusChange={handleApplicationStatusChange}
                                 />
                                 
                                 {applications.length === 0 && !loading && (
