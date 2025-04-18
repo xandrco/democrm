@@ -1,4 +1,8 @@
-import axios from 'axios';
-window.axios = axios;
+/**
+ * Bootstrap JS file - simple initialization
+ */
 
-window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+// If you need axios
+// import axios from 'axios';
+// window.axios = axios;
+// window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
