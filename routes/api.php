@@ -17,6 +17,7 @@ Route::middleware('api.auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     
     Route::get('/applications', [ApplicationController::class, 'index']);
+    Route::get('/applications/export', [ApplicationController::class, 'export']);
     Route::get('/applications/{id}', [ApplicationController::class, 'show']);
     Route::post('/applications', [ApplicationController::class, 'store']);
     Route::put('/applications/{id}', [ApplicationController::class, 'update']);

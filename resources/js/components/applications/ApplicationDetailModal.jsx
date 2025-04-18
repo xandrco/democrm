@@ -192,7 +192,6 @@ const Comments = memo(({ applicationId }) => {
                 </div>
             </div>
             
-            {/* Auth error message for quick relogin */}
             {authErrorVisible && (
                 <div className="mb-6 bg-red-50 p-4 rounded-md">
                     <div className="flex">
@@ -220,7 +219,6 @@ const Comments = memo(({ applicationId }) => {
                 </div>
             )}
             
-            {/* Add comment form */}
             <form onSubmit={handleCommentSubmit} className="mb-6">
                 {!isAuthenticated ? (
                     <div className="bg-yellow-50 p-4 rounded-md text-yellow-700 mb-3">
@@ -262,7 +260,6 @@ const Comments = memo(({ applicationId }) => {
                 )}
             </form>
             
-            {/* Comments list with delete button for owners */}
             {commentsLoading ? (
                 <div className="flex justify-center items-center py-8">
                     <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
@@ -320,7 +317,6 @@ const Comments = memo(({ applicationId }) => {
     );
 });
 
-// Main application modal component
 function ApplicationDetailModal({ isOpen, onClose, applicationId, onStatusChange }) {
     const { isAuthenticated, user } = useAuth();
     const [application, setApplication] = useState(null);
@@ -329,7 +325,6 @@ function ApplicationDetailModal({ isOpen, onClose, applicationId, onStatusChange
     const [shouldRefetch, setShouldRefetch] = useState(true);
     const [isDeleting, setIsDeleting] = useState(false);
     
-    // Setup auth headers for API requests
     const setupAuthHeaders = () => {
         const token = localStorage.getItem('auth_token');
         if (token) {
@@ -413,9 +408,7 @@ function ApplicationDetailModal({ isOpen, onClose, applicationId, onStatusChange
         }
     };
     
-    // Add function to handle application deletion
     const handleDeleteApplication = async () => {
-        // Confirm deletion
         if (!window.confirm('Вы уверены, что хотите удалить эту заявку? Все связанные комментарии также будут удалены. Это действие нельзя отменить.')) {
             return;
         }
@@ -434,13 +427,9 @@ function ApplicationDetailModal({ isOpen, onClose, applicationId, onStatusChange
             const response = await axios.delete(`/api/applications/${applicationId}`);
             
             if (response.data && response.data.success) {
-                // Close the modal
                 onClose();
                 
-                // Remove application from the list (via onStatusChange callback)
                 if (typeof onStatusChange === 'function') {
-                    // We'll use onStatusChange as a general callback for updates
-                    // By passing null as the second parameter, we signal deletion
                     onStatusChange(applicationId, null);
                 }
             } else {
@@ -598,7 +587,6 @@ function ApplicationDetailModal({ isOpen, onClose, applicationId, onStatusChange
                     </div>
                     
                     <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                        {/* Add delete button */}
                         {isAuthenticated && application && (
                             <button
                                 type="button"

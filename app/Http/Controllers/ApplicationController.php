@@ -163,4 +163,101 @@ class ApplicationController extends Controller
             'message' => 'Application deleted successfully with all related comments',
         ]);
     }
+
+    public function export(Request $request)
+    {
+        $status = $request->query('status');
+        $search = $request->query('search');
+        
+        $sortField = $request->query('sort_by', 'created_at');
+        $sortDirection = strtolower($request->query('sort_direction', 'desc'));
+        
+        $sortField = in_array($sortField, $this->allowedSortFields) ? $sortField : 'created_at';
+        $sortDirection = in_array($sortDirection, ['asc', 'desc']) ? $sortDirection : 'desc';
+        
+        $query = Application::with(['reviewer'])
+            ->select('applications.*');
+        
+        if ($status) {
+            $query->where('status', $status);
+        }
+        
+        if ($request->has('search')) {
+            $search = $request->query('search');
+            
+            if (!empty($search)) {
+                $query->where(function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                });
+            }
+        }
+        
+        if ($sortField === 'reviewed_at') {
+            $query->orderBy($sortField, $sortDirection)
+                  ->orderBy('created_at', 'desc');
+        } else {
+            $query->orderBy($sortField, $sortDirection);
+        }
+        
+        $applications = $query->get();
+        
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="applications-' . date('Y-m-d') . '.csv"',
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+        ];
+        
+        $callback = function() use ($applications) {
+            $handle = fopen('php://output', 'w');
+            
+            fputs($handle, "\xEF\xBB\xBF");
+            
+            fputcsv($handle, [
+                'ID',
+                'Имя',
+                'Email',
+                'Сообщение',
+                'Статус',
+                'Дата создания',
+                'Дата обработки',
+                'Рецензент',
+                'IP адрес',
+                'Браузер'
+            ]);
+            
+            foreach ($applications as $application) {
+                $metadata = $application->metadata ?? [];
+                
+                // Translate status to Russian
+                $statusTranslations = [
+                    'pending' => 'Новая',
+                    'in_progress' => 'В обработке',
+                    'approved' => 'Решена',
+                    'rejected' => 'Отклонена'
+                ];
+                
+                $russianStatus = $statusTranslations[$application->status] ?? $application->status;
+                
+                fputcsv($handle, [
+                    $application->id,
+                    $application->name,
+                    $application->email,
+                    $application->message,
+                    $russianStatus, // Use translated status
+                    $application->created_at,
+                    $application->reviewed_at,
+                    $application->reviewer ? $application->reviewer->name : '',
+                    $metadata['ip_address'] ?? '',
+                    $metadata['browser'] ?? $metadata['user_agent'] ?? '',
+                ]);
+            }
+            
+            fclose($handle);
+        };
+        
+        return response()->stream($callback, 200, $headers);
+    }
 }

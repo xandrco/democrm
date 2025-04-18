@@ -28,6 +28,8 @@ function Dashboard() {
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
     const [selectedApplicationId, setSelectedApplicationId] = useState(null);
 
+    const [exportLoading, setExportLoading] = useState(false);
+
     useEffect(() => {
         fetchApplications();
     }, [currentPage, sortField, sortDirection, statusFilter, searchTerm]);
@@ -147,6 +149,55 @@ function Dashboard() {
         setIsDetailModalOpen(true);
     };
 
+    const handleExportToCsv = async () => {
+        setExportLoading(true);
+        
+        try {
+            const token = localStorage.getItem('auth_token');
+            if (token) {
+                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            }
+            
+            const params = {
+                format: 'csv',
+                sort_by: sortField,
+                sort_direction: sortDirection,
+            };
+            
+            if (statusFilter) {
+                params.status = statusFilter;
+            }
+            
+            if (searchTerm) {
+                params.search = searchTerm;
+            }
+            
+            const response = await axios.get('/api/applications/export', {
+                params,
+                responseType: 'blob'
+            });
+            
+            const blob = new Blob([response.data], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            
+            const date = new Date().toISOString().split('T')[0];
+            a.download = `applications-${date}.csv`;
+            
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        } catch (err) {
+            console.error('Error exporting applications to CSV:', err);
+            setError('Не удалось экспортировать данные. Пожалуйста, попробуйте позже.');
+        } finally {
+            setExportLoading(false);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gray-100">
             <nav className="bg-white shadow-sm">
@@ -175,15 +226,35 @@ function Dashboard() {
                     <div className="bg-white p-6 rounded-lg shadow-lg mb-6">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-2xl font-bold text-gray-800">Панель управления</h2>
-                            <button
-                                onClick={() => setIsAddModalOpen(true)}
-                                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm flex items-center"
-                            >
-                                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                </svg>
-                                Добавить заявку
-                            </button>
+                            <div className="flex space-x-3">
+                                <button
+                                    onClick={handleExportToCsv}
+                                    disabled={exportLoading || loading || applications.length === 0}
+                                    className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {exportLoading ? (
+                                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                    ) : (
+                                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                        </svg>
+                                    )}
+                                    Экспорт CSV
+                                </button>
+                                
+                                <button
+                                    onClick={() => setIsAddModalOpen(true)}
+                                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm flex items-center"
+                                >
+                                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg>
+                                    Добавить заявку
+                                </button>
+                            </div>
                         </div>
                         
                         <ApplicationsFilter
