@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import ApplicationsTable from './applications/ApplicationsTable';
 import ApplicationsFilter from './applications/ApplicationsFilter';
 import Pagination from './common/Pagination';
+import ApplicationAddModal from './applications/ApplicationAddModal';
 
 function Dashboard() {
     const { user, logout } = useAuth();
@@ -21,6 +22,8 @@ function Dashboard() {
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
     const perPage = 25;
+    
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
     useEffect(() => {
         fetchApplications();
@@ -126,6 +129,10 @@ function Dashboard() {
         );
     };
 
+    const handleAddApplicationSuccess = (newApplication) => {
+        fetchApplications();
+    };
+
     return (
         <div className="min-h-screen bg-gray-100">
             <nav className="bg-white shadow-sm">
@@ -152,7 +159,18 @@ function Dashboard() {
             <main className="py-6">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="bg-white p-6 rounded-lg shadow-lg mb-6">
-                        <h2 className="text-2xl font-bold text-gray-800 mb-6">Панель управления</h2>
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-2xl font-bold text-gray-800">Панель управления</h2>
+                            <button
+                                onClick={() => setIsAddModalOpen(true)}
+                                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm flex items-center"
+                            >
+                                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                Добавить заявку
+                            </button>
+                        </div>
                         
                         <ApplicationsFilter
                             searchTerm={searchTerm}
@@ -205,6 +223,12 @@ function Dashboard() {
                     </div>
                 </div>
             </main>
+            
+            <ApplicationAddModal
+                isOpen={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
+                onSuccess={handleAddApplicationSuccess}
+            />
         </div>
     );
 }
