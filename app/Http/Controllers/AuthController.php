@@ -27,7 +27,7 @@ class AuthController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'User registered successfully',
+            'message' => 'Пользователь успешно зарегистрирован',
             'token' => $token->plainTextToken
         ], 201);
     }
@@ -44,7 +44,7 @@ class AuthController extends Controller
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
                 'success' => false,
-                'message' => 'The provided credentials are incorrect.',
+                'message' => 'Неверные учетные данные.',
             ], 401);
         }
         
@@ -52,7 +52,9 @@ class AuthController extends Controller
 
         return response()->json([
             'success' => true,
-            'token' => $token->plainTextToken
+            'message' => 'Вход выполнен успешно',
+            'token' => $token->plainTextToken,
+            'user' => $user
         ]);
     }
 
@@ -62,7 +64,7 @@ class AuthController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Logged out successfully'
+            'message' => 'Выход выполнен успешно'
         ]);
     }
 } 
