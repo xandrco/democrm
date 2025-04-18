@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Application;
 use App\Models\Comment;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class CommentController extends Controller
@@ -53,7 +52,7 @@ class CommentController extends Controller
         
         $comment = Comment::create([
             'application_id' => $application_id,
-            'user_id' => Auth::id(),
+            'user_id' => $request->user()->id,
             'comment' => $request->comment,
         ]);
         
@@ -66,11 +65,11 @@ class CommentController extends Controller
         ], 201);
     }
     
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $comment = Comment::findOrFail($id);
         
-        if (Auth::id() !== $comment->user_id && !Auth::user()->isAdmin()) {
+        if ($request->user()->id !== $comment->user_id) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized to delete this comment',

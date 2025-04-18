@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Application;
 use App\Models\Comment;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class ApplicationController extends Controller
@@ -131,7 +130,7 @@ class ApplicationController extends Controller
         
         if ($request->has('status') && $request->status !== $application->status) {
             $application->status = $request->status;
-            $application->reviewed_by = Auth::id();
+            $application->reviewed_by = $request->user()->id;
             $application->reviewed_at = now();
         }
         
@@ -140,7 +139,7 @@ class ApplicationController extends Controller
         if ($request->has('comment') && !empty($request->comment)) {
             Comment::create([
                 'application_id' => $application->id,
-                'user_id' => Auth::id(),
+                'user_id' => $request->user()->id,
                 'comment' => $request->comment,
             ]);
         }
