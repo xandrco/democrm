@@ -131,11 +131,8 @@ class ApplicationController extends Controller
         
         if ($request->has('status') && $request->status !== $application->status) {
             $application->status = $request->status;
-            
-            if ($request->status !== 'pending') {
-                $application->reviewed_by = Auth::id();
-                $application->reviewed_at = now();
-            }
+            $application->reviewed_by = Auth::id();
+            $application->reviewed_at = now();
         }
         
         $application->save();

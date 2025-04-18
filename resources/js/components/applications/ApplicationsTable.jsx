@@ -2,7 +2,7 @@ import React from 'react';
 import { formatDate } from '../../utils/helpers';
 import StatusDropdown from './StatusDropdown';
 
-function ApplicationsTable({ applications, sortField, sortDirection, handleSort, onStatusChange }) {
+function ApplicationsTable({ applications, sortField, sortDirection, handleSort, onStatusChange, onViewApplication }) {
     const renderSortIndicator = (field) => {
         if (sortField === field) {
             return (
@@ -47,6 +47,13 @@ function ApplicationsTable({ applications, sortField, sortDirection, handleSort,
     const handleApplicationStatusChange = (applicationId, newStatus) => {
         if (onStatusChange) {
             onStatusChange(applicationId, newStatus);
+        }
+    };
+    
+    const handleViewClick = (e, applicationId) => {
+        e.preventDefault();
+        if (onViewApplication) {
+            onViewApplication(applicationId);
         }
     };
     
@@ -120,9 +127,12 @@ function ApplicationsTable({ applications, sortField, sortDirection, handleSort,
                                 {application.reviewed_at ? formatDate(application.reviewed_at) : '—'}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <a href={`/applications/${application.id}`} className="text-indigo-600 hover:text-indigo-900 mr-3">
+                                <button 
+                                    onClick={(e) => handleViewClick(e, application.id)}
+                                    className="text-indigo-600 hover:text-indigo-900 mr-3 cursor-pointer"
+                                >
                                     Просмотр
-                                </a>
+                                </button>
                             </td>
                         </tr>
                     ))}

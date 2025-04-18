@@ -1,10 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 
 function StatusDropdown({ applicationId, currentStatus, onStatusChange }) {
     const [status, setStatus] = useState(currentStatus || 'pending');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const isLocalUpdate = useRef(false);
+    
+    useEffect(() => {
+        if (currentStatus && currentStatus !== status && !isLocalUpdate.current) {
+            setStatus(currentStatus);
+        }
+        isLocalUpdate.current = false;
+    }, [currentStatus, status]);
     
     const statuses = [
         { value: 'pending', label: 'Новая' },
@@ -30,6 +38,9 @@ function StatusDropdown({ applicationId, currentStatus, onStatusChange }) {
     
     const handleStatusChange = async (e) => {
         const newStatus = e.target.value;
+        
+        isLocalUpdate.current = true;
+        
         setStatus(newStatus);
         setLoading(true);
         setError('');
@@ -51,6 +62,7 @@ function StatusDropdown({ applicationId, currentStatus, onStatusChange }) {
             console.error('Error updating status:', err);
             setError('Не удалось обновить статус');
             setStatus(currentStatus);
+            isLocalUpdate.current = false;
         } finally {
             setLoading(false);
         }
@@ -64,7 +76,7 @@ function StatusDropdown({ applicationId, currentStatus, onStatusChange }) {
             <div className="mt-1 relative">
                 <select
                     id="status-select"
-                    className={`block w-full pl-3 pr-10 py-2 text-base border rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${getStatusClass(status)}`}
+                    className={`block w-full pl-3 pr-10 py-2 text-base border rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 ${getStatusClass(status)}`}
                     value={status}
                     onChange={handleStatusChange}
                     disabled={loading}

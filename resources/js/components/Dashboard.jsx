@@ -5,6 +5,7 @@ import ApplicationsTable from './applications/ApplicationsTable';
 import ApplicationsFilter from './applications/ApplicationsFilter';
 import Pagination from './common/Pagination';
 import ApplicationAddModal from './applications/ApplicationAddModal';
+import ApplicationDetailModal from './applications/ApplicationDetailModal';
 
 function Dashboard() {
     const { user, logout } = useAuth();
@@ -24,6 +25,8 @@ function Dashboard() {
     const perPage = 25;
     
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+    const [selectedApplicationId, setSelectedApplicationId] = useState(null);
 
     useEffect(() => {
         fetchApplications();
@@ -113,24 +116,29 @@ function Dashboard() {
     };
 
     const handleApplicationStatusChange = (applicationId, newStatus) => {
-        setApplications(prev => 
-            prev.map(app => {
-                if (app.id === applicationId) {
-                    return {
-                        ...app,
-                        status: newStatus,
-                        reviewed_at: app.status === 'pending' && newStatus !== 'pending' 
-                            ? new Date().toISOString() 
-                            : app.reviewed_at
-                    };
-                }
-                return app;
-            })
-        );
+        const updatedApplications = applications.map(app => {
+            if (app.id === applicationId) {
+                return {
+                    ...app,
+                    status: newStatus,
+                    reviewed_at: app.status === 'pending' && newStatus !== 'pending' 
+                        ? new Date().toISOString() 
+                        : app.reviewed_at
+                };
+            }
+            return app;
+        });
+        
+        setApplications(updatedApplications);
     };
 
     const handleAddApplicationSuccess = (newApplication) => {
         fetchApplications();
+    };
+    
+    const handleViewApplication = (applicationId) => {
+        setSelectedApplicationId(applicationId);
+        setIsDetailModalOpen(true);
     };
 
     return (
@@ -199,6 +207,7 @@ function Dashboard() {
                                     sortDirection={sortDirection}
                                     handleSort={handleSort}
                                     onStatusChange={handleApplicationStatusChange}
+                                    onViewApplication={handleViewApplication}
                                 />
                                 
                                 {applications.length === 0 && !loading && (
@@ -228,6 +237,13 @@ function Dashboard() {
                 isOpen={isAddModalOpen}
                 onClose={() => setIsAddModalOpen(false)}
                 onSuccess={handleAddApplicationSuccess}
+            />
+            
+            <ApplicationDetailModal
+                isOpen={isDetailModalOpen}
+                onClose={() => setIsDetailModalOpen(false)}
+                applicationId={selectedApplicationId}
+                onStatusChange={handleApplicationStatusChange}
             />
         </div>
     );
