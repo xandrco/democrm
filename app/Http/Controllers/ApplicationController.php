@@ -10,12 +10,21 @@ use Illuminate\Support\Facades\Validator;
 
 class ApplicationController extends Controller
 {
+    protected $allowedSortFields = [
+        'created_at', 'reviewed_at', 'name', 'email', 'status'
+    ];
+
     public function index(Request $request)
     {
         $status = $request->query('status');
         $search = $request->query('search');
         $perPage = $request->query('per_page', 15);
-        $sort = $request->query('sort', 'created_desc');
+
+        $sortField = $request->query('sort_by', 'created_at');
+        $sortDirection = strtolower($request->query('sort_direction', 'desc'));
+        
+        $sortField = in_array($sortField, $this->allowedSortFields) ? $sortField : 'created_at';
+        $sortDirection = in_array($sortDirection, ['asc', 'desc']) ? $sortDirection : 'desc';
         
         $query = Application::with('reviewer')
             ->select('applications.*')
@@ -37,27 +46,11 @@ class ApplicationController extends Controller
             });
         }
         
-        switch ($sort) {
-            case 'created_asc':
-                $query->orderBy('created_at', 'asc');
-                break;
-            case 'reviewed_desc':
-                $query->orderBy('reviewed_at', 'desc')
-                      ->orderBy('created_at', 'desc');
-                break;
-            case 'reviewed_asc':
-                $query->orderBy('reviewed_at', 'asc')
-                      ->orderBy('created_at', 'desc');
-                break;
-            case 'name_asc':
-                $query->orderBy('name', 'asc');
-                break;
-            case 'name_desc':
-                $query->orderBy('name', 'desc');
-                break;
-            default:
-                $query->orderBy('created_at', 'desc');
-                break;
+        if ($sortField === 'reviewed_at') {
+            $query->orderBy($sortField, $sortDirection)
+                  ->orderBy('created_at', 'desc');
+        } else {
+            $query->orderBy($sortField, $sortDirection);
         }
         
         $applications = $query->paginate($perPage);
