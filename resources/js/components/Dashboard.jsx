@@ -116,6 +116,12 @@ function Dashboard() {
     };
 
     const handleApplicationStatusChange = (applicationId, newStatus) => {
+        if (newStatus === null) {
+            const updatedApplications = applications.filter(app => app.id !== applicationId);
+            setApplications(updatedApplications);
+            return;
+        }
+        
         const updatedApplications = applications.map(app => {
             if (app.id === applicationId) {
                 return {

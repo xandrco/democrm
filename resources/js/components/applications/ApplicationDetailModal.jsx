@@ -4,7 +4,6 @@ import { formatDate } from '../../utils/helpers';
 import StatusDropdown from './StatusDropdown';
 import { useAuth } from '../../context/AuthContext';
 
-// Create a completely separate Comments component using React.memo to prevent re-renders
 const Comments = memo(({ applicationId }) => {
     const { isAuthenticated, user } = useAuth();
     const [comments, setComments] = useState([]);
@@ -15,8 +14,8 @@ const Comments = memo(({ applicationId }) => {
     const [submittingComment, setSubmittingComment] = useState(false);
     const [commentError, setCommentError] = useState('');
     const [authErrorVisible, setAuthErrorVisible] = useState(false);
+    const [deletingCommentId, setDeletingCommentId] = useState(null);
 
-    // Setup auth headers for API requests
     const setupAuthHeaders = () => {
         const token = localStorage.getItem('auth_token');
         if (token) {
@@ -26,14 +25,12 @@ const Comments = memo(({ applicationId }) => {
         return false;
     };
 
-    // Function to fetch comments
     const fetchComments = useCallback(() => {
         if (!applicationId) return;
         
         setCommentsLoading(true);
         setCommentsError('');
         
-        // Ensure auth headers are set
         setupAuthHeaders();
         
         const sort = commentsSortOrder === 'newest' ? 'newest' : 'oldest';
@@ -43,7 +40,6 @@ const Comments = memo(({ applicationId }) => {
         .then(response => {
             if (response.data && response.data.success) {
                 setComments(response.data.data.data || []);
-                // Hide auth error if request was successful
                 setAuthErrorVisible(false);
             } else {
                 setCommentsError('Не удалось загрузить комментарии');
@@ -64,7 +60,6 @@ const Comments = memo(({ applicationId }) => {
         });
     }, [applicationId, commentsSortOrder]);
 
-    // Handle comment submission
     const handleCommentSubmit = async (e) => {
         e.preventDefault();
         
@@ -80,7 +75,6 @@ const Comments = memo(({ applicationId }) => {
         setCommentError('');
         
         try {
-            // Ensure auth headers are set before submitting
             const hasToken = setupAuthHeaders();
             if (!hasToken) {
                 setCommentError('Ошибка авторизации. Пожалуйста, войдите заново.');
@@ -97,7 +91,6 @@ const Comments = memo(({ applicationId }) => {
                 setNewComment('');
                 setAuthErrorVisible(false);
                 
-                // Add new comment to the list based on current sort order
                 if (commentsSortOrder === 'newest') {
                     setComments(prevComments => [response.data.data, ...prevComments]);
                 } else {
@@ -127,20 +120,60 @@ const Comments = memo(({ applicationId }) => {
         }
     };
 
-    // Handle re-login when auth issues occur
     const handleRelogin = () => {
         window.location.href = '/login';
     };
 
-    // Handle sort change WITHOUT using state that would trigger a re-render in parent
     const handleSortChange = (e) => {
         setCommentsSortOrder(e.target.value);
     };
 
-    // Fetch comments on mount and when sort changes - internal to this component only
     useEffect(() => {
         fetchComments();
     }, [fetchComments]);
+
+    const handleDeleteComment = async (commentId) => {
+        if (!window.confirm('Вы уверены, что хотите удалить этот комментарий?')) {
+            return;
+        }
+
+        if (!isAuthenticated || !user) {
+            setAuthErrorVisible(true);
+            return;
+        }
+
+        if (deletingCommentId) return;
+        
+        setDeletingCommentId(commentId);
+        
+        try {
+            const hasToken = setupAuthHeaders();
+            if (!hasToken) {
+                setAuthErrorVisible(true);
+                setDeletingCommentId(null);
+                return;
+            }
+            
+            const response = await axios.delete(`/api/comments/${commentId}`);
+            
+            if (response.data && response.data.success) {
+                setComments(prevComments => prevComments.filter(comment => comment.id !== commentId));
+                setAuthErrorVisible(false);
+            } else {
+                console.error('Failed to delete comment:', response.data);
+            }
+        } catch (err) {
+            console.error('Error deleting comment:', err);
+            
+            if (err.response && err.response.status === 403) {
+                setCommentError('У вас нет прав для удаления этого комментария');
+            } else if (err.response && err.response.status === 401) {
+                setAuthErrorVisible(true);
+            }
+        } finally {
+            setDeletingCommentId(null);
+        }
+    };
 
     return (
         <div className="mt-8 border-t pt-6">
@@ -229,7 +262,7 @@ const Comments = memo(({ applicationId }) => {
                 )}
             </form>
             
-            {/* Comments list */}
+            {/* Comments list with delete button for owners */}
             {commentsLoading ? (
                 <div className="flex justify-center items-center py-8">
                     <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
@@ -252,6 +285,27 @@ const Comments = memo(({ applicationId }) => {
                                         <p className="text-xs text-gray-500">{formatDate(comment.created_at)}</p>
                                     </div>
                                 </div>
+                                
+                                {/* Delete button - only show for the comment owner */}
+                                {isAuthenticated && user && user.id === comment.user_id && (
+                                    <button 
+                                        onClick={() => handleDeleteComment(comment.id)}
+                                        className="text-red-500 hover:text-red-700 transition-colors duration-200"
+                                        disabled={deletingCommentId === comment.id}
+                                        title="Удалить комментарий"
+                                    >
+                                        {deletingCommentId === comment.id ? (
+                                            <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                        ) : (
+                                            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        )}
+                                    </button>
+                                )}
                             </div>
                             <p className="text-gray-700 whitespace-pre-line">{comment.comment}</p>
                         </div>
@@ -273,6 +327,17 @@ function ApplicationDetailModal({ isOpen, onClose, applicationId, onStatusChange
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [shouldRefetch, setShouldRefetch] = useState(true);
+    const [isDeleting, setIsDeleting] = useState(false);
+    
+    // Setup auth headers for API requests
+    const setupAuthHeaders = () => {
+        const token = localStorage.getItem('auth_token');
+        if (token) {
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            return true;
+        }
+        return false;
+    };
     
     const fetchApplicationDetail = useCallback(async () => {
         if (!applicationId || !isOpen) return;
@@ -345,6 +410,46 @@ function ApplicationDetailModal({ isOpen, onClose, applicationId, onStatusChange
         
         if (onStatusChange && applicationId) {
             onStatusChange(applicationId, newStatus);
+        }
+    };
+    
+    // Add function to handle application deletion
+    const handleDeleteApplication = async () => {
+        // Confirm deletion
+        if (!window.confirm('Вы уверены, что хотите удалить эту заявку? Все связанные комментарии также будут удалены. Это действие нельзя отменить.')) {
+            return;
+        }
+        
+        if (!applicationId) return;
+        
+        setIsDeleting(true);
+        
+        try {
+            const hasToken = setupAuthHeaders();
+            if (!hasToken) {
+                setIsDeleting(false);
+                return;
+            }
+            
+            const response = await axios.delete(`/api/applications/${applicationId}`);
+            
+            if (response.data && response.data.success) {
+                // Close the modal
+                onClose();
+                
+                // Remove application from the list (via onStatusChange callback)
+                if (typeof onStatusChange === 'function') {
+                    // We'll use onStatusChange as a general callback for updates
+                    // By passing null as the second parameter, we signal deletion
+                    onStatusChange(applicationId, null);
+                }
+            } else {
+                console.error('Failed to delete application:', response.data);
+            }
+        } catch (err) {
+            console.error('Error deleting application:', err);
+        } finally {
+            setIsDeleting(false);
         }
     };
     
@@ -493,6 +598,25 @@ function ApplicationDetailModal({ isOpen, onClose, applicationId, onStatusChange
                     </div>
                     
                     <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                        {/* Add delete button */}
+                        {isAuthenticated && application && (
+                            <button
+                                type="button"
+                                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50"
+                                onClick={handleDeleteApplication}
+                                disabled={isDeleting}
+                            >
+                                {isDeleting ? (
+                                    <span className="flex items-center">
+                                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        Удаление...
+                                    </span>
+                                ) : 'Удалить заявку'}
+                            </button>
+                        )}
                         <button
                             type="button"
                             className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
