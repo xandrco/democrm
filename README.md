@@ -1,61 +1,155 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# DemoCRM
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Описание проекта
 
-## About Laravel
+DemoCRM - это мини система управления заявками для тестогого задания. Система предоставляет удобный интерфейс для работы с заявками, включая возможность фильтрации, сортировки, поиска, изменения статусов и добавления комментариев.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Технологии
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Проект разработан с использованием следующих технологий:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Backend
+- Laravel 12 (PHP)
+- MySQL / SQLITE
+- RESTful API
 
-## Learning Laravel
+### Frontend
+- React (JS)
+- TailwindCSS
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Функциональные возможности
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- Авторизация и регистрация админов (Sanctum и API токены)
+- Создание, просмотр, редактирование и удаление заявок
+- Фильтрация заявок по различным параметрам
+- Поиск заявок по названию и email
+- Изменение статусов заявок (Новая, В обработке, Решена, Отклонена)
+- Система комментариев к заявкам
+- Экспорт списка заявок в CSV
+- Отображение метаданных о заявках (IP, браузер, источник)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Установка и настройка
 
-## Laravel Sponsors
+### Требования
+- PHP 8.2+
+- Composer
+- Node.js 14+ и npm/yarn
+- MySQL 5+
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Шаги установки
 
-### Premium Partners
+1. Клонировать репозиторий:
+```bash
+git clone https://github.com/xandrco/democrm
+cd democrm
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development/)**
-- **[Active Logic](https://activelogic.com)**
+2. Установить зависимости PHP:
+```bash
+composer install
+```
 
-## Contributing
+3. Установить зависимости JavaScript:
+```bash
+npm install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+4. Создать и настроить файл окружения:
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-## Code of Conduct
+5. Настроить подключение к базе данных в файле `.env`
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+6. Запустить миграции и заполнить базу начальными данными:
+```bash
+php artisan migrate --seed
+```
 
-## Security Vulnerabilities
+7. Собрать фронтенд-ресурсы:
+```bash
+npm run dev
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+8. Запустить локальный сервер разработки:
+```bash
+php artisan serve
+```
 
-## License
+## Миграции и сидеры
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Миграции
+
+Проект содержит следующие основные миграции:
+
+- `create_users_table` - таблица пользователей
+- `create_applications_table` - таблица заявок с полями name, email, message, status и др.
+- `create_comments_table` - таблица комментариев к заявкам
+
+Для выполнения миграций используйте команду:
+```bash
+php artisan migrate
+```
+
+### Сидеры
+
+В проекте настроены следующие сидеры для заполнения базы тестовыми данными:
+
+- `UserSeeder` - создает демо-аккаунты пользователей
+- `ApplicationSeeder` - создает тестовые заявки
+- `CommentSeeder` - создает комментарии к заявкам
+
+Для запуска всех сидеров используйте команду:
+```bash
+php artisan db:seed
+```
+
+## Демо-аккаунты
+
+После запуска сидеров будут доступны следующие демо-аккаунты:
+
+**Администратор**
+   - Email: admin@democrm.com
+   - Пароль: password
+
+**Администратор 2**
+   - Email: admin2@democrm.com
+   - Пароль: password
+
+## API документация
+
+API-документация доступна в файле [api-documentation.md](api-documentation.md) в корне проекта.
+
+Система предоставляет RESTful API для работы с заявками и комментариями, включая следующие основные эндпоинты:
+
+- Аутентификация: `/api/login`, `/api/register`, `/api/logout`
+- Заявки: `/api/applications`
+- Комментарии: `/api/applications/{id}/comments`
+
+Все запросы, кроме авторизации, требуют передачи токена в заголовке запроса.
+
+## Разработка
+
+### Запуск фронтенда в режиме разработки
+
+```bash
+npm run dev
+```
+
+## Структура проекта
+
+### Backend
+
+- `app/Models` - модели данных (Application, Comment, User)
+- `app/Http/Controllers` - контроллеры API
+- `app/Http/Middleware` - промежуточное ПО, включая аутентификацию
+- `database/migrations` - миграции базы данных
+- `database/seeders` - сидеры для заполнения базы данными
+- `routes/api.php` - определение API-маршрутов
+
+### Frontend
+
+- `resources/js/components` - React-компоненты
+- `resources/js/context` - контексты для управления состоянием
+- `resources/js/utils` - вспомогательные функции

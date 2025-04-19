@@ -172,7 +172,7 @@ POST /api/applications
 **Параметры запроса:**
 ```json
 {
-  "name": "Имя заявителя",
+  "name": "Название заявки",
   "email": "email@example.com",
   "message": "Текст заявки"
 }
@@ -190,7 +190,7 @@ Authorization: Bearer your_auth_token
   "message": "Application created successfully",
   "data": {
     "id": 1,
-    "name": "Имя заявителя",
+    "name": "Название заявки",
     "email": "email@example.com",
     "message": "Текст заявки",
     "status": "pending",
@@ -217,7 +217,7 @@ Authorization: Bearer your_auth_token
   "success": true,
   "data": {
     "id": 1,
-    "name": "Имя заявителя",
+    "name": "Название заявки",
     "email": "email@example.com",
     "message": "Текст заявки",
     "status": "pending",
@@ -260,7 +260,7 @@ Authorization: Bearer your_auth_token
   "message": "Application updated successfully",
   "data": {
     "id": 1,
-    "name": "Имя заявителя",
+    "name": "Название заявки",
     "email": "email@example.com",
     "message": "Текст заявки",
     "status": "in_progress",
@@ -326,7 +326,7 @@ Authorization: Bearer your_auth_token
 **Ответ:**
 CSV-файл с заявками, включающий следующие колонки:
 - ID
-- Имя
+- Название
 - Email
 - Сообщение
 - Статус
