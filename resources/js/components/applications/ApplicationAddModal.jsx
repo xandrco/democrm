@@ -1,7 +1,9 @@
+// Компонент модального окна для добавления новой заявки
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function ApplicationAddModal({ isOpen, onClose, onSuccess }) {
+    // Состояние для хранения данных формы и ошибок
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -10,6 +12,7 @@ function ApplicationAddModal({ isOpen, onClose, onSuccess }) {
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // Обработка закрытия модального окна по клавише Esc
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
@@ -31,6 +34,7 @@ function ApplicationAddModal({ isOpen, onClose, onSuccess }) {
         }
     }, [isOpen, onClose]);
 
+    // Обработчик изменения полей формы
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -38,6 +42,7 @@ function ApplicationAddModal({ isOpen, onClose, onSuccess }) {
             [name]: value
         }));
         
+        // Очищаем ошибку при изменении поля
         if (errors[name]) {
             setErrors(prev => ({
                 ...prev,
@@ -46,6 +51,7 @@ function ApplicationAddModal({ isOpen, onClose, onSuccess }) {
         }
     };
 
+    // Валидация формы
     const validate = () => {
         const newErrors = {};
         
@@ -67,6 +73,7 @@ function ApplicationAddModal({ isOpen, onClose, onSuccess }) {
         return Object.keys(newErrors).length === 0;
     };
 
+    // Обработчик отправки формы
     const handleSubmit = async (e) => {
         e.preventDefault();
         
@@ -102,12 +109,14 @@ function ApplicationAddModal({ isOpen, onClose, onSuccess }) {
     return (
         <div className="fixed inset-0 z-50 overflow-y-auto">
             <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                {/* Затемнение фона */}
                 <div className="fixed inset-0 transition-opacity z-40" aria-hidden="true">
                     <div className="absolute inset-0 bg-black opacity-60" onClick={onClose}></div>
                 </div>
 
                 <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
                 
+                {/* Модальное окно */}
                 <div 
                     className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full relative z-50"
                     onClick={(e) => e.stopPropagation()}
@@ -119,6 +128,7 @@ function ApplicationAddModal({ isOpen, onClose, onSuccess }) {
                                     Новая заявка
                                 </h3>
                                 
+                                {/* Отображение общих ошибок */}
                                 {errors.general && (
                                     <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">
                                         {errors.general}
@@ -126,6 +136,7 @@ function ApplicationAddModal({ isOpen, onClose, onSuccess }) {
                                 )}
                                 
                                 <form onSubmit={handleSubmit}>
+                                    {/* Поле для имени */}
                                     <div className="mb-4">
                                         <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                                             Имя
@@ -143,6 +154,7 @@ function ApplicationAddModal({ isOpen, onClose, onSuccess }) {
                                         )}
                                     </div>
                                     
+                                    {/* Поле для email */}
                                     <div className="mb-4">
                                         <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                                             Email
@@ -160,6 +172,7 @@ function ApplicationAddModal({ isOpen, onClose, onSuccess }) {
                                         )}
                                     </div>
                                     
+                                    {/* Поле для сообщения */}
                                     <div className="mb-4">
                                         <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
                                             Сообщение
@@ -181,6 +194,7 @@ function ApplicationAddModal({ isOpen, onClose, onSuccess }) {
                         </div>
                     </div>
                     
+                    {/* Кнопки действий */}
                     <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                         <button
                             type="button"

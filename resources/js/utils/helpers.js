@@ -1,3 +1,9 @@
+/**
+ * Форматирование даты в строку вида YYYY-MM-DD HH:MM
+ * 
+ * @param {string} dateString - строка с датой в формате ISO
+ * @returns {string} - отформатированная дата
+ */
 export const formatDate = (dateString) => {
     if (!dateString) return '';
     
@@ -15,21 +21,3 @@ export const formatDate = (dateString) => {
     
     return `${year}-${month}-${day} ${hours}:${minutes}`;
 };
-
-export const truncateText = (text, length = 50) => {
-    if (!text) return '';
-    if (text.length <= length) return text;
-    
-    return `${text.substring(0, length)}...`;
-};
-
-export const formatCurrency = (amount, currency = 'RUB') => {
-    if (amount === null || amount === undefined) return '';
-    
-    return new Intl.NumberFormat('ru-RU', {
-        style: 'currency',
-        currency: currency,
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-    }).format(amount);
-}; 

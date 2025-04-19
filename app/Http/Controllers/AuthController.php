@@ -9,6 +9,12 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+    /**
+     * Регистрация нового пользователя
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function register(Request $request)
     {
         $request->validate([
@@ -32,6 +38,12 @@ class AuthController extends Controller
         ], 201);
     }
 
+    /**
+     * Авторизация пользователя
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function login(Request $request)
     {
         $request->validate([
@@ -58,6 +70,12 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Выход пользователя из системы
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();

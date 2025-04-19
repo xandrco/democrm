@@ -9,10 +9,21 @@ use Illuminate\Support\Facades\Validator;
 
 class ApplicationController extends Controller
 {
+    /**
+     * Разрешенные поля для сортировки заявок
+     * 
+     * @var array
+     */
     protected $allowedSortFields = [
         'created_at', 'reviewed_at', 'name', 'email', 'status'
     ];
 
+    /**
+     * Получение списка заявок с фильтрацией и сортировкой
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index(Request $request)
     {
         $status = $request->query('status');
@@ -25,7 +36,7 @@ class ApplicationController extends Controller
         $sortField = in_array($sortField, $this->allowedSortFields) ? $sortField : 'created_at';
         $sortDirection = in_array($sortDirection, ['asc', 'desc']) ? $sortDirection : 'desc';
         
-        $query = Application::with('reviewer')
+        $query = Application::with(['reviewer', 'comments.user'])
             ->select('applications.*')
             ->selectSub(
                 Comment::selectRaw('COUNT(*)')
@@ -63,6 +74,12 @@ class ApplicationController extends Controller
         ]);
     }
 
+    /**
+     * Создание новой заявки
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -88,7 +105,7 @@ class ApplicationController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'message' => $request->message,
-            'status' => $request->status ?? 'pending',
+            'status' => $request->status ?? Application::STATUS_PENDING,
             'metadata' => $metadata,
         ]);
         
@@ -99,9 +116,15 @@ class ApplicationController extends Controller
         ], 201);
     }
 
+    /**
+     * Просмотр детальной информации о заявке
+     *
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function show($id)
     {
-        $application = Application::with(['reviewer'])
+        $application = Application::with(['reviewer', 'comments.user'])
             ->findOrFail($id);
         
         return response()->json([
@@ -110,6 +133,13 @@ class ApplicationController extends Controller
         ]);
     }
 
+    /**
+     * Обновление данных заявки и изменение статуса
+     *
+     * @param Request $request
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(Request $request, $id)
     {
         $application = Application::findOrFail($id);
@@ -118,7 +148,12 @@ class ApplicationController extends Controller
             'name' => 'sometimes|required|string|max:255',
             'email' => 'sometimes|required|email|max:255',
             'message' => 'sometimes|required|string',
-            'status' => 'sometimes|required|in:pending,in_progress,approved,rejected',
+            'status' => 'sometimes|required|in:'.implode(',', [
+                Application::STATUS_PENDING,
+                Application::STATUS_IN_PROGRESS,
+                Application::STATUS_APPROVED,
+                Application::STATUS_REJECTED
+            ]),
         ]);
         
         if ($validator->fails()) {
@@ -153,6 +188,12 @@ class ApplicationController extends Controller
         ]);
     }
 
+    /**
+     * Удаление заявки из системы
+     *
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function destroy($id)
     {
         $application = Application::findOrFail($id);
@@ -164,6 +205,12 @@ class ApplicationController extends Controller
         ]);
     }
 
+    /**
+     * Экспорт заявок в CSV файл
+     *
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
     public function export(Request $request)
     {
         $status = $request->query('status');
@@ -175,7 +222,7 @@ class ApplicationController extends Controller
         $sortField = in_array($sortField, $this->allowedSortFields) ? $sortField : 'created_at';
         $sortDirection = in_array($sortDirection, ['asc', 'desc']) ? $sortDirection : 'desc';
         
-        $query = Application::with(['reviewer'])
+        $query = Application::with(['reviewer', 'comments.user'])
             ->select('applications.*');
         
         if ($status) {
@@ -231,27 +278,17 @@ class ApplicationController extends Controller
             foreach ($applications as $application) {
                 $metadata = $application->metadata ?? [];
                 
-                // Translate status to Russian
-                $statusTranslations = [
-                    'pending' => 'Новая',
-                    'in_progress' => 'В обработке',
-                    'approved' => 'Решена',
-                    'rejected' => 'Отклонена'
-                ];
-                
-                $russianStatus = $statusTranslations[$application->status] ?? $application->status;
-                
                 fputcsv($handle, [
                     $application->id,
                     $application->name,
                     $application->email,
                     $application->message,
-                    $russianStatus, // Use translated status
+                    $application->status_label,
                     $application->created_at,
                     $application->reviewed_at,
                     $application->reviewer ? $application->reviewer->name : '',
                     $metadata['ip_address'] ?? '',
-                    $metadata['browser'] ?? $metadata['user_agent'] ?? '',
+                    $metadata['user_agent'] ?? '',
                 ]);
             }
             

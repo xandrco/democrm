@@ -4,8 +4,10 @@ import { formatDate } from '../../utils/helpers';
 import StatusDropdown from './StatusDropdown';
 import { useAuth } from '../../context/AuthContext';
 
+// Компонент для отображения и управления комментариями
 const Comments = memo(({ applicationId }) => {
     const { isAuthenticated, user } = useAuth();
+    // Состояние для хранения комментариев и их загрузки
     const [comments, setComments] = useState([]);
     const [commentsLoading, setCommentsLoading] = useState(false);
     const [commentsError, setCommentsError] = useState('');
@@ -16,6 +18,7 @@ const Comments = memo(({ applicationId }) => {
     const [authErrorVisible, setAuthErrorVisible] = useState(false);
     const [deletingCommentId, setDeletingCommentId] = useState(null);
 
+    // Настройка заголовков авторизации для запросов
     const setupAuthHeaders = () => {
         const token = localStorage.getItem('auth_token');
         if (token) {
@@ -25,6 +28,7 @@ const Comments = memo(({ applicationId }) => {
         return false;
     };
 
+    // Загрузка комментариев с сервера
     const fetchComments = useCallback(() => {
         if (!applicationId) return;
         
@@ -60,6 +64,7 @@ const Comments = memo(({ applicationId }) => {
         });
     }, [applicationId, commentsSortOrder]);
 
+    // Обработчик отправки нового комментария
     const handleCommentSubmit = async (e) => {
         e.preventDefault();
         
@@ -120,10 +125,12 @@ const Comments = memo(({ applicationId }) => {
         }
     };
 
+    // Обработчик повторной авторизации
     const handleRelogin = () => {
         window.location.href = '/login';
     };
 
+    // Обработчик изменения порядка сортировки комментариев
     const handleSortChange = (e) => {
         setCommentsSortOrder(e.target.value);
     };
@@ -132,6 +139,7 @@ const Comments = memo(({ applicationId }) => {
         fetchComments();
     }, [fetchComments]);
 
+    // Обработчик удаления комментария
     const handleDeleteComment = async (commentId) => {
         if (!window.confirm('Вы уверены, что хотите удалить этот комментарий?')) {
             return;
@@ -192,6 +200,7 @@ const Comments = memo(({ applicationId }) => {
                 </div>
             </div>
             
+            {/* Отображение ошибки авторизации */}
             {authErrorVisible && (
                 <div className="mb-6 bg-red-50 p-4 rounded-md">
                     <div className="flex">
@@ -219,6 +228,7 @@ const Comments = memo(({ applicationId }) => {
                 </div>
             )}
             
+            {/* Форма добавления нового комментария */}
             <form onSubmit={handleCommentSubmit} className="mb-6">
                 {!isAuthenticated ? (
                     <div className="bg-yellow-50 p-4 rounded-md text-yellow-700 mb-3">
@@ -260,6 +270,7 @@ const Comments = memo(({ applicationId }) => {
                 )}
             </form>
             
+            {/* Отображение списка комментариев */}
             {commentsLoading ? (
                 <div className="flex justify-center items-center py-8">
                     <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
@@ -283,7 +294,7 @@ const Comments = memo(({ applicationId }) => {
                                     </div>
                                 </div>
                                 
-                                {/* Delete button - only show for the comment owner */}
+                                {/* Кнопка удаления комментария (только для владельца) */}
                                 {isAuthenticated && user && user.id === comment.user_id && (
                                     <button 
                                         onClick={() => handleDeleteComment(comment.id)}
@@ -317,14 +328,17 @@ const Comments = memo(({ applicationId }) => {
     );
 });
 
+// Основной компонент модального окна
 function ApplicationDetailModal({ isOpen, onClose, applicationId, onStatusChange }) {
     const { isAuthenticated, user } = useAuth();
+    // Состояние для хранения данных заявки и управления модальным окном
     const [application, setApplication] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [shouldRefetch, setShouldRefetch] = useState(true);
     const [isDeleting, setIsDeleting] = useState(false);
     
+    // Настройка заголовков авторизации для запросов
     const setupAuthHeaders = () => {
         const token = localStorage.getItem('auth_token');
         if (token) {
@@ -334,6 +348,7 @@ function ApplicationDetailModal({ isOpen, onClose, applicationId, onStatusChange
         return false;
     };
     
+    // Загрузка деталей заявки с сервера
     const fetchApplicationDetail = useCallback(async () => {
         if (!applicationId || !isOpen) return;
         
@@ -369,6 +384,7 @@ function ApplicationDetailModal({ isOpen, onClose, applicationId, onStatusChange
         }
     }, [isOpen, applicationId]);
     
+    // Обработка закрытия модального окна по клавише Esc
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
@@ -390,6 +406,7 @@ function ApplicationDetailModal({ isOpen, onClose, applicationId, onStatusChange
         }
     }, [isOpen, onClose]);
     
+    // Обработчик изменения статуса заявки
     const handleStatusChange = (newStatus) => {
         setApplication(prev => {
             if (!prev) return prev;
@@ -408,6 +425,7 @@ function ApplicationDetailModal({ isOpen, onClose, applicationId, onStatusChange
         }
     };
     
+    // Обработчик удаления заявки
     const handleDeleteApplication = async () => {
         if (!window.confirm('Вы уверены, что хотите удалить эту заявку? Все связанные комментарии также будут удалены. Это действие нельзя отменить.')) {
             return;
@@ -447,12 +465,14 @@ function ApplicationDetailModal({ isOpen, onClose, applicationId, onStatusChange
     return (
         <div className="fixed inset-0 z-50 overflow-y-auto">
             <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                {/* Затемнение фона */}
                 <div className="fixed inset-0 transition-opacity z-40" aria-hidden="true">
                     <div className="absolute inset-0 bg-black opacity-60" onClick={onClose}></div>
                 </div>
 
                 <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
                 
+                {/* Модальное окно */}
                 <div 
                     className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full relative z-50"
                     onClick={(e) => e.stopPropagation()}
@@ -475,6 +495,7 @@ function ApplicationDetailModal({ isOpen, onClose, applicationId, onStatusChange
                                 </div>
                                 
                                 <div className="min-h-[500px] transition-all duration-200">
+                                    {/* Отображение состояния загрузки */}
                                     {loading ? (
                                         <div className="flex justify-center items-center h-64">
                                             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -487,6 +508,7 @@ function ApplicationDetailModal({ isOpen, onClose, applicationId, onStatusChange
                                         <div>
                                             <div className="mb-6">
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                    {/* Информация о заявке */}
                                                     <div className="mb-4">
                                                         <h4 className="text-sm font-medium text-gray-500">Имя</h4>
                                                         <p className="mt-1 text-gray-900 text-lg font-medium">{application.name}</p>
@@ -498,6 +520,7 @@ function ApplicationDetailModal({ isOpen, onClose, applicationId, onStatusChange
                                                     </div>
                                                 </div>
                                                 
+                                                {/* Выпадающий список статусов */}
                                                 <div className="mb-6">
                                                     <StatusDropdown 
                                                         applicationId={application.id}
@@ -506,6 +529,7 @@ function ApplicationDetailModal({ isOpen, onClose, applicationId, onStatusChange
                                                     />
                                                 </div>
                                                 
+                                                {/* Сообщение заявки */}
                                                 <div className="mb-6">
                                                     <h4 className="text-sm font-medium text-gray-500">Сообщение</h4>
                                                     <div className="mt-1 p-4 bg-gray-50 rounded-md min-h-[60px]">
@@ -513,6 +537,7 @@ function ApplicationDetailModal({ isOpen, onClose, applicationId, onStatusChange
                                                     </div>
                                                 </div>
                                                 
+                                                {/* Даты создания и обработки */}
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                     <div>
                                                         <h4 className="text-sm font-medium text-gray-500">Дата создания</h4>
@@ -524,6 +549,7 @@ function ApplicationDetailModal({ isOpen, onClose, applicationId, onStatusChange
                                                     </div>
                                                 </div>
                                                 
+                                                {/* Информация о рецензенте */}
                                                 {application.reviewer && (
                                                     <div className="mt-6 p-4 bg-gray-50 rounded-md">
                                                         <h4 className="text-sm font-medium text-gray-500 mb-2">Информация о рецензенте</h4>
@@ -532,6 +558,7 @@ function ApplicationDetailModal({ isOpen, onClose, applicationId, onStatusChange
                                                     </div>
                                                 )}
                                                 
+                                                {/* Метаданные заявки */}
                                                 {application.metadata && (
                                                     <div className="mt-6">
                                                         <h4 className="text-sm font-medium text-gray-500 mb-2">Метаданные</h4>
@@ -572,7 +599,7 @@ function ApplicationDetailModal({ isOpen, onClose, applicationId, onStatusChange
                                                     </div>
                                                 )}
                                                 
-                                                {/* Properly memoized Comments component */}
+                                                {/* Компонент комментариев */}
                                                 {application && <Comments applicationId={application.id} />}
                                             </div>
                                         </div>
@@ -586,6 +613,7 @@ function ApplicationDetailModal({ isOpen, onClose, applicationId, onStatusChange
                         </div>
                     </div>
                     
+                    {/* Кнопки действий */}
                     <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                         {isAuthenticated && application && (
                             <button

@@ -9,6 +9,13 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EnsureApiTokenIsValid
 {
+    /**
+     * Проверка действительности API токена и авторизации пользователя
+     *
+     * @param Request $request
+     * @param Closure $next
+     * @return Response
+     */
     public function handle(Request $request, Closure $next): Response
     {
         if (!Auth::guard('sanctum')->check()) {

@@ -1,3 +1,4 @@
+// Компонент фильтрации и поиска заявок
 import React from 'react';
 
 function ApplicationsFilter({ 
@@ -8,6 +9,7 @@ function ApplicationsFilter({
     handleSearchSubmit,
     refreshData
 }) {
+    // Список доступных статусов заявок
     const statuses = [
         { value: '', label: 'Все статусы' },
         { value: 'pending', label: 'Новая' },
@@ -16,10 +18,12 @@ function ApplicationsFilter({
         { value: 'rejected', label: 'Отклонена' }
     ];
     
+    // Обработчик изменения статуса фильтра
     const handleStatusChange = (e) => {
         setStatusFilter(e.target.value);
     };
     
+    // Обработчик изменения поискового запроса с задержкой 0.5 секунды
     const handleSearchChange = (e) => {
         const newValue = e.target.value;
         setSearchTerm(newValue);
@@ -32,7 +36,7 @@ function ApplicationsFilter({
             } else {
                 window.searchTimeout = setTimeout(() => {
                     handleSearchSubmit({ preventDefault: () => {} });
-                }, 300);
+                }, 500);
             }
         }
     };
@@ -40,6 +44,7 @@ function ApplicationsFilter({
     return (
         <div className="bg-gray-50 p-4 rounded-lg mb-6">
             <div className="flex flex-col md:flex-row md:items-end space-y-4 md:space-y-0 md:space-x-4">
+                {/* Поле поиска */}
                 <div className="flex-1">
                     <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -57,6 +62,7 @@ function ApplicationsFilter({
                     </div>
                 </div>
                 
+                {/* Фильтр по статусу */}
                 <div className="w-full md:w-48">
                     <label htmlFor="status-filter" className="block text-sm font-medium text-gray-700 mb-1">
                         Статус
@@ -75,6 +81,7 @@ function ApplicationsFilter({
                     </select>
                 </div>
                 
+                {/* Кнопка обновления данных */}
                 <div>
                     <button
                         type="button"

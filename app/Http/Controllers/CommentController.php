@@ -9,6 +9,13 @@ use Illuminate\Support\Facades\Validator;
 
 class CommentController extends Controller
 {
+    /**
+     * Получение списка комментариев для заявки
+     *
+     * @param Request $request
+     * @param int $application_id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index(Request $request, $application_id)
     {
         $application = Application::findOrFail($application_id);
@@ -35,6 +42,13 @@ class CommentController extends Controller
         ]);
     }
     
+    /**
+     * Добавление нового комментария к заявке
+     *
+     * @param Request $request
+     * @param int $application_id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(Request $request, $application_id)
     {
         $application = Application::findOrFail($application_id);
@@ -65,6 +79,13 @@ class CommentController extends Controller
         ], 201);
     }
     
+    /**
+     * Удаление комментария
+     *
+     * @param Request $request
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function destroy(Request $request, $id)
     {
         $comment = Comment::findOrFail($id);

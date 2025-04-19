@@ -8,32 +8,42 @@ import ApplicationAddModal from './applications/ApplicationAddModal';
 import ApplicationDetailModal from './applications/ApplicationDetailModal';
 
 function Dashboard() {
+    // Получаем данные пользователя и функцию выхода из контекста аутентификации
     const { user, logout } = useAuth();
+    
+    // Состояние для хранения списка заявок и состояния загрузки
     const [applications, setApplications] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     
+    // Состояние для фильтрации и поиска
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
     
+    // Состояние для сортировки
     const [sortField, setSortField] = useState('created_at');
     const [sortDirection, setSortDirection] = useState('desc');
     
+    // Состояние для пагинации
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
     const perPage = 25;
     
+    // Состояние для модальных окон
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
     const [selectedApplicationId, setSelectedApplicationId] = useState(null);
 
+    // Состояние для индикатора загрузки при экспорте
     const [exportLoading, setExportLoading] = useState(false);
 
+    // Загрузка заявок при изменении параметров фильтрации, сортировки или пагинации
     useEffect(() => {
         fetchApplications();
     }, [currentPage, sortField, sortDirection, statusFilter, searchTerm]);
 
+    // Обработчик отправки формы поиска
     const handleSearchSubmit = (e) => {
         if (e) {
             e.preventDefault();
@@ -42,6 +52,7 @@ function Dashboard() {
         fetchApplications();
     };
 
+    // Обработчик изменения сортировки
     const handleSort = (field) => {
         setCurrentPage(1);
         
@@ -53,6 +64,7 @@ function Dashboard() {
         }
     };
 
+    // Функция загрузки заявок с сервера
     const fetchApplications = async () => {
         setLoading(true);
         setError('');
@@ -71,6 +83,7 @@ function Dashboard() {
             
             params.search = searchTerm;
             
+            // Удаляем пустые параметры
             Object.keys(params).forEach(key => {
                 if (params[key] === undefined || params[key] === null) {
                     delete params[key];
@@ -113,10 +126,12 @@ function Dashboard() {
         }
     };
 
+    // Обработчик выхода из системы
     const handleLogout = () => {
         logout();
     };
 
+    // Обработчик изменения статуса заявки
     const handleApplicationStatusChange = (applicationId, newStatus) => {
         if (newStatus === null) {
             const updatedApplications = applications.filter(app => app.id !== applicationId);
@@ -140,15 +155,18 @@ function Dashboard() {
         setApplications(updatedApplications);
     };
 
+    // Обработчик успешного добавления заявки
     const handleAddApplicationSuccess = (newApplication) => {
         fetchApplications();
     };
     
+    // Обработчик просмотра деталей заявки
     const handleViewApplication = (applicationId) => {
         setSelectedApplicationId(applicationId);
         setIsDetailModalOpen(true);
     };
 
+    // Функция экспорта заявок в CSV
     const handleExportToCsv = async () => {
         setExportLoading(true);
         

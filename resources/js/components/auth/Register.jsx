@@ -1,8 +1,10 @@
+// Компонент формы регистрации нового пользователя
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
 function Register({ onRegister }) {
+    // Состояние для хранения данных формы и ошибок
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -11,6 +13,7 @@ function Register({ onRegister }) {
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
 
+    // Обработчик отправки формы регистрации
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -18,6 +21,7 @@ function Register({ onRegister }) {
         setErrors({});
 
         try {
+            // Отправка запроса на сервер для регистрации
             const response = await axios.post('/api/register', {
                 name,
                 email,
@@ -25,10 +29,12 @@ function Register({ onRegister }) {
                 password_confirmation: passwordConfirmation
             });
             
+            // Если получен токен, сохраняем его и обновляем заголовки axios
             if (response.data.token) {
                 localStorage.setItem('auth_token', response.data.token);
                 axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
                 
+                // Получаем данные пользователя после успешной регистрации
                 try {
                     const userResponse = await axios.get('/api/user');
                     onRegister(userResponse.data);
@@ -39,6 +45,7 @@ function Register({ onRegister }) {
                 setError('Ошибка регистрации. Пожалуйста, попробуйте снова.');
             }
         } catch (err) {
+            // Обработка ошибок валидации и других ошибок
             if (err.response?.data?.errors) {
                 setErrors(err.response.data.errors);
             } else {
@@ -54,6 +61,7 @@ function Register({ onRegister }) {
             <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
                 <h1 className="text-2xl font-bold text-center mb-6">Регистрация в Mini CRM</h1>
                 
+                {/* Отображение общих ошибок */}
                 {error && (
                     <div className="bg-red-50 text-red-600 p-3 rounded-md mb-4">
                         {error}
@@ -73,6 +81,7 @@ function Register({ onRegister }) {
                             onChange={(e) => setName(e.target.value)}
                             required
                         />
+                        {/* Отображение ошибок валидации для поля имени */}
                         {errors.name && (
                             <p className="text-red-500 text-xs mt-1">{errors.name[0]}</p>
                         )}
@@ -90,6 +99,7 @@ function Register({ onRegister }) {
                             onChange={(e) => setEmail(e.target.value)}
                             required
                         />
+                        {/* Отображение ошибок валидации для поля email */}
                         {errors.email && (
                             <p className="text-red-500 text-xs mt-1">{errors.email[0]}</p>
                         )}
@@ -108,6 +118,7 @@ function Register({ onRegister }) {
                             required
                             minLength="8"
                         />
+                        {/* Отображение ошибок валидации для поля пароля */}
                         {errors.password && (
                             <p className="text-red-500 text-xs mt-1">{errors.password[0]}</p>
                         )}
@@ -137,6 +148,7 @@ function Register({ onRegister }) {
                     </button>
                 </form>
                 
+                {/* Ссылка на страницу входа */}
                 <div className="text-center mt-2">
                     <p className="text-gray-600">
                         Уже есть аккаунт?{' '}

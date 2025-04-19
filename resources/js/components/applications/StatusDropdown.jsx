@@ -1,12 +1,15 @@
+// Компонент выпадающего списка для изменения статуса заявки
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 
 function StatusDropdown({ applicationId, currentStatus, onStatusChange }) {
+    // Состояние для хранения текущего статуса и состояния загрузки
     const [status, setStatus] = useState(currentStatus || 'pending');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const isLocalUpdate = useRef(false);
     
+    // Обновление статуса при изменении внешнего значения
     useEffect(() => {
         if (currentStatus && currentStatus !== status && !isLocalUpdate.current) {
             setStatus(currentStatus);
@@ -14,6 +17,7 @@ function StatusDropdown({ applicationId, currentStatus, onStatusChange }) {
         isLocalUpdate.current = false;
     }, [currentStatus, status]);
     
+    // Список доступных статусов
     const statuses = [
         { value: 'pending', label: 'Новая' },
         { value: 'in_progress', label: 'В обработке' },
@@ -21,6 +25,7 @@ function StatusDropdown({ applicationId, currentStatus, onStatusChange }) {
         { value: 'rejected', label: 'Отклонена' }
     ];
     
+    // Функция для получения класса стиля в зависимости от статуса
     const getStatusClass = (status) => {
         switch (status) {
             case 'pending':
@@ -36,6 +41,7 @@ function StatusDropdown({ applicationId, currentStatus, onStatusChange }) {
         }
     };
     
+    // Обработчик изменения статуса
     const handleStatusChange = async (e) => {
         const newStatus = e.target.value;
         
@@ -74,6 +80,7 @@ function StatusDropdown({ applicationId, currentStatus, onStatusChange }) {
                 Статус заявки
             </label>
             <div className="mt-1 relative">
+                {/* Выпадающий список статусов */}
                 <select
                     id="status-select"
                     className={`block w-full pl-3 pr-10 py-2 text-base border rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 ${getStatusClass(status)}`}
@@ -87,6 +94,7 @@ function StatusDropdown({ applicationId, currentStatus, onStatusChange }) {
                         </option>
                     ))}
                 </select>
+                {/* Индикатор загрузки */}
                 {loading && (
                     <div className="absolute right-2 top-2">
                         <svg className="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -96,6 +104,7 @@ function StatusDropdown({ applicationId, currentStatus, onStatusChange }) {
                     </div>
                 )}
             </div>
+            {/* Отображение ошибки */}
             {error && (
                 <p className="mt-2 text-sm text-red-600">{error}</p>
             )}
