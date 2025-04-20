@@ -76,14 +76,11 @@ function StatusDropdown({ applicationId, currentStatus, onStatusChange }) {
     
     return (
         <div className="relative">
-            <label htmlFor="status-select" className="block text-sm font-medium text-gray-700 mb-1">
-                Статус заявки
-            </label>
-            <div className="mt-1 relative">
+            <div className="relative">
                 {/* Выпадающий список статусов */}
                 <select
                     id="status-select"
-                    className={`block w-full pl-3 pr-10 py-2 text-base border rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 ${getStatusClass(status)}`}
+                    className={`block text-[13px] w-full pl-2 pr-10 py-2 border rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 ${getStatusClass(status)}`}
                     value={status}
                     onChange={handleStatusChange}
                     disabled={loading}

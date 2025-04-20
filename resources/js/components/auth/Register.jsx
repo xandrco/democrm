@@ -57,9 +57,9 @@ function Register({ onRegister }) {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-                <h1 className="text-2xl font-bold text-center mb-6">Регистрация в Mini CRM</h1>
+        <div className="min-h-screen flex items-center justify-center bg-white">
+            <div className="bg-slate-50 p-8 border border-slate-200 rounded-lg w-full max-w-md mx-4">
+                <h1 className="text-xl font-bold text-center mb-6">Регистрация в CRM</h1>
                 
                 {/* Отображение общих ошибок */}
                 {error && (
@@ -70,13 +70,13 @@ function Register({ onRegister }) {
                 
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
+                        <label className="block text-slate-600 text-xs font-medium mb-1" htmlFor="name">
                             Имя пользователя
                         </label>
                         <input
                             id="name"
                             type="text"
-                            className={`w-full px-3 py-2 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                            className={`w-full bg-white px-3 py-2 border ${errors.name ? 'border-red-500' : 'border-slate-300'} rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500`}
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             required
@@ -88,13 +88,13 @@ function Register({ onRegister }) {
                     </div>
                     
                     <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+                        <label className="block text-slate-600 text-xs font-medium mb-1" htmlFor="email">
                             Электронная почта
                         </label>
                         <input
                             id="email"
                             type="email"
-                            className={`w-full px-3 py-2 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                            className={`w-full bg-white px-3 py-2 border ${errors.email ? 'border-red-500' : 'border-slate-300'} rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500`}
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
@@ -106,13 +106,13 @@ function Register({ onRegister }) {
                     </div>
                     
                     <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+                        <label className="block text-slate-600 text-xs font-medium mb-1" htmlFor="password">
                             Пароль
                         </label>
                         <input
                             id="password"
                             type="password"
-                            className={`w-full px-3 py-2 border ${errors.password ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                            className={`w-full bg-white px-3 py-2 border ${errors.password ? 'border-red-500' : 'border-slate-300'} rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500`}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
@@ -125,13 +125,13 @@ function Register({ onRegister }) {
                     </div>
                     
                     <div className="mb-6">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password_confirmation">
+                        <label className="block text-slate-600 text-xs font-medium mb-1" htmlFor="password_confirmation">
                             Подтверждение пароля
                         </label>
                         <input
                             id="password_confirmation"
                             type="password"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className={`w-full bg-white px-3 py-2 border ${errors.password_confirmation ? 'border-red-500' : 'border-slate-300'} rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500`}
                             value={passwordConfirmation}
                             onChange={(e) => setPasswordConfirmation(e.target.value)}
                             required
@@ -141,7 +141,7 @@ function Register({ onRegister }) {
                     
                     <button
                         type="submit"
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 mb-4"
+                        className="w-full bg-blue-600 transition-colors duration-200 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:ring-opacity-50 mb-4"
                         disabled={loading}
                     >
                         {loading ? 'Регистрация...' : 'Зарегистрироваться'}
@@ -150,7 +150,7 @@ function Register({ onRegister }) {
                 
                 {/* Ссылка на страницу входа */}
                 <div className="text-center mt-2">
-                    <p className="text-gray-600">
+                    <p className="text-slate-600">
                         Уже есть аккаунт?{' '}
                         <Link to="/login" className="text-blue-600 hover:underline">
                             Войти

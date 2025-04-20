@@ -8,7 +8,7 @@ function ApplicationsTable({ applications, sortField, sortDirection, handleSort,
     const renderSortIndicator = (field) => {
         if (sortField === field) {
             return (
-                <span className="ml-1 text-gray-500">
+                <span className="ml-1 text-slate-500">
                     {sortDirection === 'asc' ? '↑' : '↓'}
                 </span>
             );
@@ -28,7 +28,7 @@ function ApplicationsTable({ applications, sortField, sortDirection, handleSort,
             case 'rejected':
                 return 'bg-red-100 text-red-800';
             default:
-                return 'bg-gray-100 text-gray-800';
+                return 'bg-slate-100 text-slate-800';
         }
     };
     
@@ -64,30 +64,22 @@ function ApplicationsTable({ applications, sortField, sortDirection, handleSort,
     };
     
     return (
-        <div className="overflow-x-auto mt-6">
-            <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+        <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-slate-200">
+                <thead className="bg-slate-50">
                     <tr>
-                        {/* Заголовок столбца имени */}
+                        {/* Заголовок столбца заявки (название задачи и email) */}
                         <th 
                             scope="col" 
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            className="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider cursor-pointer"
                             onClick={() => handleSort('name')}
                         >
-                            Имя {renderSortIndicator('name')}
-                        </th>
-                        {/* Заголовок столбца email */}
-                        <th 
-                            scope="col" 
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                            onClick={() => handleSort('email')}
-                        >
-                            Email {renderSortIndicator('email')}
+                            Заявка {renderSortIndicator('name')}
                         </th>
                         {/* Заголовок столбца статуса */}
                         <th 
                             scope="col" 
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            className="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider cursor-pointer"
                             onClick={() => handleSort('status')}
                         >
                             Статус {renderSortIndicator('status')}
@@ -95,7 +87,7 @@ function ApplicationsTable({ applications, sortField, sortDirection, handleSort,
                         {/* Заголовок столбца даты создания */}
                         <th 
                             scope="col" 
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            className="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider cursor-pointer"
                             onClick={() => handleSort('created_at')}
                         >
                             Дата создания {renderSortIndicator('created_at')}
@@ -103,31 +95,30 @@ function ApplicationsTable({ applications, sortField, sortDirection, handleSort,
                         {/* Заголовок столбца даты просмотра */}
                         <th 
                             scope="col" 
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            className="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider cursor-pointer"
                             onClick={() => handleSort('reviewed_at')}
                         >
-                            Дата просмотра {renderSortIndicator('reviewed_at')}
+                            Дата обновления {renderSortIndicator('reviewed_at')}
                         </th>
                         {/* Заголовок столбца действий */}
-                        <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">
                             Действия
                         </th>
                     </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white divide-y divide-slate-200">
                     {/* Отображение списка заявок */}
                     {applications.map((application) => (
-                        <tr key={application.id} className="hover:bg-gray-50">
+                        <tr key={application.id} className="hover:bg-slate-50/75">
                             {/* Ячейка с именем */}
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                {application.name}
-                            </td>
-                            {/* Ячейка с email */}
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {application.email}
+                            <td 
+                                onClick={(e) => handleViewClick(e, application.id)}
+                                className="px-4 py-2 whitespace-nowrap text-sm cursor-pointer">
+                                <p className="text-slate-900 font-medium">{application.name}</p>
+                                <p className="text-slate-500 text-[13px]">{application.email}</p>
                             </td>
                             {/* Ячейка со статусом */}
-                            <td className="px-6 py-4 whitespace-nowrap">
+                            <td className="px-4 py-2 whitespace-nowrap">
                                 <div className="w-40">
                                     <StatusDropdown
                                         applicationId={application.id}
@@ -137,18 +128,18 @@ function ApplicationsTable({ applications, sortField, sortDirection, handleSort,
                                 </div>
                             </td>
                             {/* Ячейка с датой создания */}
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <td className="px-4 py-2 whitespace-nowrap text-sm text-slate-500">
                                 {formatDate(application.created_at)}
                             </td>
                             {/* Ячейка с датой просмотра */}
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <td className="px-4 py-2 whitespace-nowrap text-sm text-slate-500">
                                 {application.reviewed_at ? formatDate(application.reviewed_at) : '—'}
                             </td>
                             {/* Ячейка с кнопкой просмотра */}
-                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <td className="px-4 py-2.5 whitespace-nowrap text-right text-sm font-medium">
                                 <button 
                                     onClick={(e) => handleViewClick(e, application.id)}
-                                    className="text-indigo-600 hover:text-indigo-900 mr-3 cursor-pointer"
+                                    className="bg-slate-100 rounded-md px-3 py-1.5 text-slate-700 hover:bg-slate-200 mr-3 cursor-pointer"
                                 >
                                     Просмотр
                                 </button>

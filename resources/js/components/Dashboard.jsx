@@ -217,12 +217,12 @@ function Dashboard() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100">
+        <div className="min-h-screen bg-slate-50">
             <nav className="bg-white shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
                         <div className="flex items-center">
-                            <h1 className="text-xl font-semibold">Mini CRM</h1>
+                            <h1 className="text-xl font-semibold">CRM</h1>
                         </div>
                         <div className="flex items-center">
                             <span className="text-gray-700 mr-4">
@@ -230,7 +230,7 @@ function Dashboard() {
                             </span>
                             <button
                                 onClick={handleLogout}
-                                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm"
+                                className="bg-slate-200 hover:bg-slate-300 text-slate-800 cursor-pointer px-4 py-2 transition-colors duration-200 rounded-md text-sm"
                             >
                                 Выйти
                             </button>
@@ -239,16 +239,16 @@ function Dashboard() {
                 </div>
             </nav>
 
-            <main className="py-6">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="bg-white p-6 rounded-lg shadow-lg mb-6">
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-2xl font-bold text-gray-800">Панель управления</h2>
+            <main className="py-8">
+                <div className="max-w-7xl mx-auto px-4">
+                    <div className="bg-white border border-slate-200 rounded-lg mb-6">
+                        <div className="flex flex-col md:flex-row justify-between md:items-center gap-2 p-4 border-b border-slate-200">
+                            <h2 className="text-lg font-bold text-slate-700">Панель управления</h2>
                             <div className="flex space-x-3">
                                 <button
                                     onClick={handleExportToCsv}
                                     disabled={exportLoading || loading || applications.length === 0}
-                                    className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="cursor-pointer bg-slate-200 hover:bg-slate-300 text-slate-800 font-medium transition-colors duration-200 px-4 py-2 rounded-md text-sm flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {exportLoading ? (
                                         <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -256,7 +256,7 @@ function Dashboard() {
                                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
                                     ) : (
-                                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                                         </svg>
                                     )}
@@ -265,9 +265,9 @@ function Dashboard() {
                                 
                                 <button
                                     onClick={() => setIsAddModalOpen(true)}
-                                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm flex items-center"
+                                    className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors duration-200 px-4 py-2 rounded-md text-sm flex items-center"
                                 >
-                                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                                     </svg>
                                     Добавить заявку
@@ -281,7 +281,6 @@ function Dashboard() {
                             statusFilter={statusFilter}
                             setStatusFilter={setStatusFilter}
                             handleSearchSubmit={handleSearchSubmit}
-                            refreshData={fetchApplications}
                         />
                         
                         {error && (
@@ -306,7 +305,7 @@ function Dashboard() {
                                 />
                                 
                                 {applications.length === 0 && !loading && (
-                                    <div className="bg-gray-50 p-4 rounded-md text-center text-gray-500 mt-4">
+                                    <div className="bg-slate-50 p-4 rounded-md text-center text-slate-500 mt-4">
                                         Заявки не найдены. Измените параметры поиска или фильтрации.
                                     </div>
                                 )}

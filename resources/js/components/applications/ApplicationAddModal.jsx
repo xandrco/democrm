@@ -16,6 +16,7 @@ function ApplicationAddModal({ isOpen, onClose, onSuccess }) {
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
+            document.documentElement.style.overflow = 'hidden';
             
             const handleEscKey = (e) => {
                 if (e.key === 'Escape') {
@@ -27,10 +28,12 @@ function ApplicationAddModal({ isOpen, onClose, onSuccess }) {
             
             return () => {
                 document.body.style.overflow = 'auto';
+                document.documentElement.style.overflow = 'auto';
                 document.removeEventListener('keydown', handleEscKey);
             };
         } else {
             document.body.style.overflow = 'auto';
+            document.documentElement.style.overflow = 'auto';
         }
     }, [isOpen, onClose]);
 
@@ -118,87 +121,86 @@ function ApplicationAddModal({ isOpen, onClose, onSuccess }) {
                 
                 {/* Модальное окно */}
                 <div 
-                    className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full relative z-50"
+                    className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle max-w-lg w-full relative z-50"
                     onClick={(e) => e.stopPropagation()}
                 >
                     <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                        <div className="sm:flex sm:items-start">
-                            <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                                <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-                                    Новая заявка
-                                </h3>
-                                
-                                {/* Отображение общих ошибок */}
-                                {errors.general && (
-                                    <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">
-                                        {errors.general}
-                                    </div>
-                                )}
-                                
-                                <form onSubmit={handleSubmit}>
-                                    {/* Поле для имени */}
-                                    <div className="mb-4">
-                                        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                                            Имя
-                                        </label>
-                                        <input
-                                            type="text"
-                                            id="name"
-                                            name="name"
-                                            value={formData.name}
-                                            onChange={handleChange}
-                                            className={`w-full px-3 py-2 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm`}
-                                        />
-                                        {errors.name && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-                                        )}
-                                    </div>
-                                    
-                                    {/* Поле для email */}
-                                    <div className="mb-4">
-                                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                                            Email
-                                        </label>
-                                        <input
-                                            type="email"
-                                            id="email"
-                                            name="email"
-                                            value={formData.email}
-                                            onChange={handleChange}
-                                            className={`w-full px-3 py-2 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm`}
-                                        />
-                                        {errors.email && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-                                        )}
-                                    </div>
-                                    
-                                    {/* Поле для сообщения */}
-                                    <div className="mb-4">
-                                        <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-                                            Сообщение
-                                        </label>
-                                        <textarea
-                                            id="message"
-                                            name="message"
-                                            rows="4"
-                                            value={formData.message}
-                                            onChange={handleChange}
-                                            className={`w-full px-3 py-2 border ${errors.message ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm`}
-                                        ></textarea>
-                                        {errors.message && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.message}</p>
-                                        )}
-                                    </div>
-                                </form>
+                        <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                            Новая заявка
+                        </h3>
+                        
+                        {/* Отображение общих ошибок */}
+                        {errors.general && (
+                            <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">
+                                {errors.general}
                             </div>
-                        </div>
+                        )}
+                        
+                        <form onSubmit={handleSubmit}>
+                            {/* Поле для имени */}
+                            <div className="mb-4">
+                                <label className="block text-slate-600 text-xs font-medium mb-1" htmlFor="name">
+                                    Название задачи
+                                </label>
+                                <input
+                                    type="text"
+                                    id="name"
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    className={`w-full bg-white px-3 py-2 border ${errors.name ? 'border-red-500' : 'border-slate-300'} rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500`}
+                                />
+                                <p className="mt-1 text-xs text-slate-500">Введите краткое название или тему задачи</p>
+                                {errors.name && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+                                )}
+                            </div>
+                            
+                            {/* Поле для email */}
+                            <div className="mb-4">
+                                <label htmlFor="email" className="block text-slate-600 text-xs font-medium mb-1">
+                                    Email
+                                </label>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    className={`w-full bg-white px-3 py-2 border ${errors.email ? 'border-red-500' : 'border-slate-300'} rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500`}
+                                />
+                                <p className="mt-1 text-xs text-slate-500">Укажите ваш рабочий email для связи</p>
+                                {errors.email && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                                )}
+                            </div>
+                            
+                            {/* Поле для сообщения */}
+                            <div className="mb-4">
+                                <label htmlFor="message" className="block text-slate-600 text-xs font-medium mb-1">
+                                    Сообщение
+                                </label>
+                                <textarea
+                                    id="message"
+                                    name="message"
+                                    rows="4"
+                                    value={formData.message}
+                                    onChange={handleChange}
+                                    className={`w-full bg-white px-3 py-2 border ${errors.message ? 'border-red-500' : 'border-slate-300'} rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500`}
+                                ></textarea>
+                                <p className="mt-1 text-xs text-slate-500">Опишите подробности задачи, требования и сроки выполнения</p>
+                                {errors.message && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.message}</p>
+                                )}
+                            </div>
+                        </form>
                     </div>
                     
                     {/* Кнопки действий */}
-                    <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <div className="bg-gray-50 px-4 py-3 sm:px-6 flex flex-row-reverse gap-2 border-t border-slate-200">
                         <button
                             type="button"
-                            className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50"
+                            className="cursor-pointer w-full inline-flex justify-center rounded-md border border-transparent px-4 py-2 bg-blue-600 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-1 focus:ring-offset-2 focus:ring-blue-500 sm:w-auto sm:text-sm disabled:opacity-50"
                             onClick={handleSubmit}
                             disabled={isSubmitting}
                         >
@@ -206,7 +208,7 @@ function ApplicationAddModal({ isOpen, onClose, onSuccess }) {
                         </button>
                         <button
                             type="button"
-                            className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                            className="cursor-pointer w-full inline-flex justify-center rounded-md border border-gray-300 px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-offset-2 focus:ring-blue-500 sm:w-auto sm:text-sm"
                             onClick={onClose}
                             disabled={isSubmitting}
                         >
