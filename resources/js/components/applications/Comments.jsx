@@ -320,7 +320,7 @@ const Comments = memo(({ applicationId }) => {
                     ))}
                 </div>
             ) : (
-                <div className="text-slate-500 text-center py-8">
+                <div className="text-slate-500 text-center py-8 text-[13px]">
                     Нет комментариев. Будьте первым, кто оставит комментарий!
                 </div>
             )}

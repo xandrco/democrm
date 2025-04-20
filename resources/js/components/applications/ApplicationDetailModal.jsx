@@ -267,7 +267,7 @@ function ApplicationDetailModal({ isOpen, onClose, applicationId, onStatusChange
                                         {isAuthenticated && application && (
                                             <button
                                                 type="button"
-                                                className="mt-4 cursor-pointer w-full inline-flex justify-center rounded-md shadow-xs border border-transparent px-4 py-3 bg-slate-50 hover:bg-slate-100 text-sm font-medium text-red-700 focus:outline-none focus:ring-1 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+                                                className="mt-4 cursor-pointer w-full inline-flex justify-center rounded-md shadow-xs border border-transparent px-4 py-3 bg-red-50 hover:bg-red-100 text-sm font-medium text-red-700 focus:outline-none focus:ring-1 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
                                                 onClick={handleDeleteApplication}
                                                 disabled={isDeleting}
                                             >
