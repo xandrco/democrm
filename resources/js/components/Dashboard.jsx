@@ -132,21 +132,31 @@ function Dashboard() {
     };
 
     // Обработчик изменения статуса заявки
-    const handleApplicationStatusChange = (applicationId, newStatus) => {
+    const handleApplicationStatusChange = (applicationId, newStatus, updatedData) => {
         if (newStatus === null) {
             const updatedApplications = applications.filter(app => app.id !== applicationId);
             setApplications(updatedApplications);
             return;
         }
         
+        const now = new Date().toISOString();
+        
         const updatedApplications = applications.map(app => {
             if (app.id === applicationId) {
+                // Use updated data if available
+                if (updatedData && updatedData.reviewed_at) {
+                    return {
+                        ...app,
+                        status: newStatus,
+                        reviewed_at: updatedData.reviewed_at
+                    };
+                }
+                
+                // Otherwise manually set reviewed_at
                 return {
                     ...app,
                     status: newStatus,
-                    reviewed_at: app.status === 'pending' && newStatus !== 'pending' 
-                        ? new Date().toISOString() 
-                        : app.reviewed_at
+                    reviewed_at: now
                 };
             }
             return app;

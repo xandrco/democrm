@@ -85,21 +85,27 @@ function ApplicationDetailModal({ isOpen, onClose, applicationId, onStatusChange
     }, [isOpen, onClose]);
     
     // Обработчик изменения статуса заявки
-    const handleStatusChange = (newStatus) => {
+    const handleStatusChange = (newStatus, updatedData) => {
+        const now = new Date().toISOString();
+        
+        // Just update the status and reviewed_at in state without refetching
         setApplication(prev => {
             if (!prev) return prev;
             
             return {
                 ...prev,
                 status: newStatus,
-                reviewed_at: prev.status === 'pending' && newStatus !== 'pending' 
-                    ? new Date().toISOString() 
-                    : prev.reviewed_at
+                reviewed_at: now,
+                reviewer: user // Add current user as reviewer
             };
         });
         
+        // Pass to parent for updating the main list
         if (onStatusChange && applicationId) {
-            onStatusChange(applicationId, newStatus);
+            onStatusChange(applicationId, newStatus, {
+                status: newStatus,
+                reviewed_at: now
+            });
         }
     };
     

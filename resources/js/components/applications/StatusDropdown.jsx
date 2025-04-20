@@ -44,6 +44,7 @@ function StatusDropdown({ applicationId, currentStatus, onStatusChange }) {
     // Обработчик изменения статуса
     const handleStatusChange = async (e) => {
         const newStatus = e.target.value;
+        const now = new Date().toISOString();
         
         isLocalUpdate.current = true;
         
@@ -58,7 +59,11 @@ function StatusDropdown({ applicationId, currentStatus, onStatusChange }) {
             
             if (response.data && response.data.success) {
                 if (onStatusChange) {
-                    onStatusChange(newStatus);
+                    // Always provide reviewed_at timestamp
+                    onStatusChange(newStatus, {
+                        status: newStatus,
+                        reviewed_at: now
+                    });
                 }
             } else {
                 setError('Ошибка при обновлении статуса');
