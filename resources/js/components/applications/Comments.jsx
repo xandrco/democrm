@@ -185,7 +185,9 @@ const Comments = memo(({ applicationId }) => {
     return (
         <div className="mt-8 border-t border-slate-200 pt-4">
             <div className="flex justify-between items-center mb-4">
-                <h4 className="font-medium text-slate-700">Комментарии</h4>
+                <h4 className="font-medium text-slate-700">
+                    Комментарии {comments.length > 0 && `(${comments.length})`}
+                </h4>
                 <div className="flex items-center">
                     <select 
                         className="text-sm border border-slate-300 rounded-md px-2 py-1.5" 

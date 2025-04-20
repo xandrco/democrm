@@ -115,7 +115,18 @@ function ApplicationsTable({ applications, sortField, sortDirection, handleSort,
                                 onClick={(e) => handleViewClick(e, application.id)}
                                 className="px-4 py-2 whitespace-nowrap text-sm cursor-pointer">
                                 <p className="text-slate-900 font-medium">{application.name}</p>
-                                <p className="text-slate-500 text-[13px]">{application.email}</p>
+                                <div className="flex items-center gap-1.5">
+                                    <p className="text-slate-500 text-[13px]">{application.email}</p>
+                                    {/* Comments count indicator */}
+                                    {application.comments_count > 0 && (
+                                        <div className="flex items-center text-[11px] text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded-full">
+                                            <svg className="h-3 w-3 mr-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                                            </svg>
+                                            {application.comments_count}
+                                        </div>
+                                    )}
+                                </div>
                             </td>
                             {/* Ячейка со статусом */}
                             <td className="px-4 py-2 whitespace-nowrap">
